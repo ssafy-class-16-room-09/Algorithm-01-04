@@ -1,0 +1,64 @@
+name: Generate problem files
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "파일을 생성할 개인 브랜치 (all = 전체)"
+        type: choice
+        default: all
+        options:
+          - all
+          - scm
+          - hig
+          - hjh
+          - hjy
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate files on each branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # PROBLEMS.md와 스크립트는 항상 main 기준으로 사용 (브랜치 전환과 무관하게)
+          git show origin/main:PROBLEMS.md > "$RUNNER_TEMP/PROBLEMS.md"
+          git show origin/main:.github/scripts/generate_problem_files.py > "$RUNNER_TEMP/generate_problem_files.py"
+
+          if [ "${{ inputs.branch }}" = "all" ]; then
+            branches="scm hig hjh hjy"
+          else
+            branches="${{ inputs.branch }}"
+          fi
+
+          for br in $branches; do
+            if ! git rev-parse --verify "origin/$br" > /dev/null 2>&1; then
+              echo "::warning::브랜치 origin/$br 이(가) 없어 건너뜀"
+              continue
+            fi
+            echo "=== $br ==="
+            git switch -C "$br" "origin/$br"
+            python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md"
+            # 채점기(tools/)와 테스트케이스(testcases/)를 main 기준으로 동기화
+            for path in tools testcases; do
+              if git cat-file -e "origin/main:$path" 2>/dev/null; then
+                git checkout origin/main -- "$path"
+              fi
+            done
+            if [ -n "$(git status --porcelain)" ]; then
+              git add -A
+              git commit -m "chore: 문제 파일 생성 및 테스트케이스 동기화"
+              git push origin "$br"
+            else
+              echo "$br: 변경 없음"
+            fi
+          done
