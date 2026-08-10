@@ -26,6 +26,28 @@ public class {name} {{
 }}
 """
 
+# 백준 문제 폴더에 함께 생성되는 채점 실행 파일 (이 파일을 실행하면 채점된다)
+TEST_RUNNER = '''"""이 파일을 실행하면 옆의 풀이 파일이 테스트케이스로 채점된다.
+
+실행: python test.py  (IDE의 실행 버튼도 동일)
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+NAME = Path(__file__).resolve().parent.name  # 폴더명 = 문제 파일명
+
+root = Path(__file__).resolve().parent
+while root != root.parent and not (root / "tools" / "judge.py").exists():
+    root = root.parent
+if not (root / "tools" / "judge.py").exists():
+    sys.exit("tools/judge.py 를 찾지 못함 — Generate 액션으로 브랜치를 동기화했는지 확인")
+
+sys.exit(subprocess.call(
+    [sys.executable, str(root / "tools" / "judge.py"), NAME], cwd=root
+))
+'''
+
 
 def main() -> None:
     problems_path = Path(sys.argv[1])
@@ -60,16 +82,24 @@ def main() -> None:
         url_match = re.search(r"https?://\S+?(?=\)|$)", cells[2])
         url = url_match.group(0) if url_match else None
 
-        target = root / f"week{week:02d}" / "online" / f"{name}.java"
+        # 백준 문제는 전용 폴더 안에 풀이 파일 + 채점 실행 파일(test.py)을 만든다
+        is_boj = name.startswith("Boj")
+        base = root / f"week{week:02d}" / "online"
+        target = base / name / f"{name}.java" if is_boj else base / f"{name}.java"
         if target.exists():
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
-        template = BOJ_TEMPLATE if name.startswith("Boj") else FILE_TEMPLATE
+        template = BOJ_TEMPLATE if is_boj else FILE_TEMPLATE
         header = f"// {title}\n" + (f"// {url}\n" if url else "")
         target.write_text(
             template.format(header=header, name=name), encoding="utf-8"
         )
         created.append(target)
+        if is_boj:
+            test_file = target.parent / "test.py"
+            if not test_file.exists():
+                test_file.write_text(TEST_RUNNER, encoding="utf-8")
+                created.append(test_file)
 
     if created:
         print("생성된 파일:")
