@@ -3,7 +3,7 @@
 사용법:
     python tools/judge.py <파일명(클래스명)> [--time-limit 초]
 
-- 풀이 파일: week*/ 아래에서 <파일명>.java 를 찾는다.
+- 풀이 파일: week*/ 아래에서 <파일명>.java 또는 <파일명>.py 를 찾는다.
 - 테스트케이스: testcases/weekNN/<파일명>/*.in 과 같은 이름의 *.out 쌍.
 - 종료 코드: 전체 통과 0, 실패 1, 채점 불가(파일·케이스 없음 등) 2.
 """
@@ -40,9 +40,14 @@ def main() -> int:
 
     root = Path(__file__).resolve().parent.parent
 
-    solutions = [f for d in root.glob("week*") for f in d.rglob(f"{name}.java")]
+    solutions = [
+        f
+        for d in root.glob("week*")
+        for ext in (".java", ".py")
+        for f in d.rglob(f"{name}{ext}")
+    ]
     if not solutions:
-        print(f"[채점 불가] week*/ 아래에서 {name}.java 를 찾지 못함")
+        print(f"[채점 불가] week*/ 아래에서 {name}.java 또는 {name}.py 를 찾지 못함")
         return 2
     solution = solutions[0]
 
@@ -59,14 +64,18 @@ def main() -> int:
         return 2
 
     with tempfile.TemporaryDirectory() as build_dir:
-        compile_result = subprocess.run(
-            ["javac", "-encoding", "UTF-8", "-d", build_dir, str(solution)],
-            capture_output=True, text=True,
-        )
-        if compile_result.returncode != 0:
-            print("[컴파일 에러]")
-            print(compile_result.stderr.strip())
-            return 1
+        if solution.suffix == ".java":
+            compile_result = subprocess.run(
+                ["javac", "-encoding", "UTF-8", "-d", build_dir, str(solution)],
+                capture_output=True, text=True,
+            )
+            if compile_result.returncode != 0:
+                print("[컴파일 에러]")
+                print(compile_result.stderr.strip())
+                return 1
+            run_cmd = ["java", "-cp", build_dir, name]
+        else:
+            run_cmd = [sys.executable, str(solution)]
 
         passed = 0
         judged = 0
@@ -78,7 +87,7 @@ def main() -> int:
             judged += 1
             try:
                 run = subprocess.run(
-                    ["java", "-cp", build_dir, name],
+                    run_cmd,
                     stdin=case.open("r", encoding="utf-8"),
                     capture_output=True, text=True, encoding="utf-8",
                     timeout=args.time_limit,

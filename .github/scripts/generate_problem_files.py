@@ -1,10 +1,10 @@
-"""PROBLEMS.md를 파싱해 weekNN/online/에 문제별 자바 파일을 생성한다.
+"""PROBLEMS.md를 파싱해 weekNN/online/에 문제별 풀이 파일을 생성한다.
 
-사용법: python3 generate_problem_files.py <PROBLEMS.md 경로> [저장소 루트]
-이미 존재하는 파일은 건드리지 않는다.
+사용법: python3 generate_problem_files.py <PROBLEMS.md 경로> [저장소 루트] [--lang java|python]
+이미 존재하는 파일은 건드리지 않는다 (다른 언어로 이미 생성된 문제도 건너뜀).
 """
+import argparse
 import re
-import sys
 from pathlib import Path
 
 FILE_TEMPLATE = """{header}public class {name} {{
@@ -24,6 +24,17 @@ public class {name} {{
         System.out.print(sb);
     }}
 }}
+"""
+
+PY_FILE_TEMPLATE = """{header}
+def solution():
+    pass
+"""
+
+PY_BOJ_TEMPLATE = """{header}import sys
+
+input = sys.stdin.readline
+
 """
 
 # 백준 문제 폴더에 함께 생성되는 채점 실행 파일 (이 파일을 실행하면 채점된다)
@@ -50,8 +61,13 @@ sys.exit(subprocess.call(
 
 
 def main() -> None:
-    problems_path = Path(sys.argv[1])
-    root = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(".")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problems", help="PROBLEMS.md 경로")
+    parser.add_argument("root", nargs="?", default=".", help="저장소 루트")
+    parser.add_argument("--lang", choices=["java", "python"], default="java")
+    args = parser.parse_args()
+    problems_path = Path(args.problems)
+    root = Path(args.root)
 
     week = None
     created = []
@@ -84,13 +100,25 @@ def main() -> None:
 
         # 백준 문제는 전용 폴더 안에 풀이 파일 + 채점 실행 파일(test.py)을 만든다
         is_boj = name.startswith("Boj")
-        base = root / f"week{week:02d}" / "online"
-        target = base / name / f"{name}.java" if is_boj else base / f"{name}.java"
-        if target.exists():
+        week_dir = root / f"week{week:02d}"
+        base = week_dir / "online"
+        folder = base / name if is_boj else base
+        # 위치·언어와 무관하게 주차 폴더 어딘가에 이미 풀이 파일이 있으면 건너뜀
+        # (파일을 옮겼거나 예전 구조로 생성된 경우에도 중복 생성 방지)
+        if week_dir.exists() and (
+            any(week_dir.rglob(f"{name}.java")) or any(week_dir.rglob(f"{name}.py"))
+        ):
             continue
+
+        if args.lang == "python":
+            template = PY_BOJ_TEMPLATE if is_boj else PY_FILE_TEMPLATE
+            header = f"# {title}\n" + (f"# {url}\n" if url else "")
+            target = folder / f"{name}.py"
+        else:
+            template = BOJ_TEMPLATE if is_boj else FILE_TEMPLATE
+            header = f"// {title}\n" + (f"// {url}\n" if url else "")
+            target = folder / f"{name}.java"
         target.parent.mkdir(parents=True, exist_ok=True)
-        template = BOJ_TEMPLATE if is_boj else FILE_TEMPLATE
-        header = f"// {title}\n" + (f"// {url}\n" if url else "")
         target.write_text(
             template.format(header=header, name=name), encoding="utf-8"
         )

@@ -17,6 +17,15 @@ on:
 permissions:
   contents: write
 
+# 여러 번 눌러도 동시에 실행되지 않도록 순차 처리 (중복 커밋 방지)
+concurrency:
+  group: generate-problem-files
+  cancel-in-progress: false
+
+env:
+  # 파이썬으로 푸는 팀원의 브랜치 (공백으로 구분해 나열, 나머지 브랜치는 자바)
+  PYTHON_BRANCHES: "hjh"
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -45,9 +54,13 @@ jobs:
               echo "::warning::브랜치 origin/$br 이(가) 없어 건너뜀"
               continue
             fi
-            echo "=== $br ==="
+            case " $PYTHON_BRANCHES " in
+              *" $br "*) lang=python ;;
+              *) lang=java ;;
+            esac
+            echo "=== $br ($lang) ==="
             git switch -C "$br" "origin/$br"
-            python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md"
+            python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md" --lang "$lang"
             # 채점기(tools/)와 테스트케이스(testcases/)를 main 기준으로 동기화
             for path in tools testcases; do
               if git cat-file -e "origin/main:$path" 2>/dev/null; then

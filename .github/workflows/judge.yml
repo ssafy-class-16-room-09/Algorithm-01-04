@@ -36,15 +36,16 @@ jobs:
           before="${{ github.event.before }}"
           if [ "$before" != "0000000000000000000000000000000000000000" ] \
              && git cat-file -e "$before^{commit}" 2>/dev/null; then
-            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.java$' || true)
+            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.(java|py)$' | grep -v '/test\.py$' || true)
           else
-            changed=$(git ls-files | grep -E '^week[^/]*/.*\.java$' || true)
+            changed=$(git ls-files | grep -E '^week[^/]*/.*\.(java|py)$' | grep -v '/test\.py$' || true)
           fi
 
           overall=0
           judged=0
           for f in $changed; do
-            name=$(basename "$f" .java)
+            name=$(basename "$f")
+            name="${name%.*}"
             tc=$(find testcases -mindepth 2 -maxdepth 2 -type d -name "$name" 2>/dev/null | head -1)
             [ -z "$tc" ] && continue
             judged=1
