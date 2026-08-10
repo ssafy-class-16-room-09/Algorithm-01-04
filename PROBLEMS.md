@@ -31,6 +31,14 @@
 
 ---
 
+## week-02
+
+| 문제 | 파일명 | 링크 |
+|---|---|---|
+| 프로그래머스 42746 · 가장 큰 수 | PgsLargestNumber | https://school.programmers.co.kr/learn/courses/30/lessons/42746 |
+| 프로그래머스 43238 · 입국심사 | PgsImmigration | https://school.programmers.co.kr/learn/courses/30/lessons/43238 |
+| 백준 · 드래곤 앤 던전 | BojDragonAndDungeon | https://www.notion.so/3b8216e328d180ffb42cc824ab0d5cd4?source=copy_link |
+
 ## week-01 (완료)
 
 | 문제 | 파일명 | 링크 |
