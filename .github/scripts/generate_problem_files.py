@@ -37,10 +37,9 @@ input = sys.stdin.readline
 
 """
 
-# 백준 문제 폴더에 함께 생성되는 채점 실행 파일 (이 파일을 실행하면 채점된다)
-TEST_RUNNER = '''"""이 파일을 실행하면 옆의 풀이 파일이 테스트케이스로 채점된다.
-
-실행: python test.py  (IDE의 실행 버튼도 동일)
+# 백준 문제 폴더에 함께 생성되는 채점 실행 파일 (내용이 바뀌면 자동 갱신됨)
+RUNNER_TEMPLATE = '''"""{doc}
+이 파일은 자동 생성·갱신되므로 직접 수정하지 않는다.
 """
 import subprocess
 import sys
@@ -55,9 +54,25 @@ if not (root / "tools" / "judge.py").exists():
     sys.exit("tools/judge.py 를 찾지 못함 — Generate 액션으로 브랜치를 동기화했는지 확인")
 
 sys.exit(subprocess.call(
-    [sys.executable, str(root / "tools" / "judge.py"), NAME], cwd=root
+    [sys.executable, str(root / "tools" / "judge.py"), NAME{extra}], cwd=root
 ))
 '''
+
+TEST_RUNNER = RUNNER_TEMPLATE.format(
+    doc="""예제 채점 — 프로그래머스의 '코드 실행'에 해당.
+
+등록된 예제(testcases/주차/문제/samples/)만 빠르게 돌려본다.
+실행: python test.py        전체 검증은 python submit.py""",
+    extra=', "--set", "samples"',
+)
+
+SUBMIT_RUNNER = RUNNER_TEMPLATE.format(
+    doc="""검증 채점 — 프로그래머스의 '제출 후 채점'에 해당.
+
+전체 테스트케이스(대형 성능 케이스 포함)로 채점한다.
+실행: python submit.py      예제만 돌리려면 python test.py""",
+    extra="",
+)
 
 
 def main() -> None:
@@ -105,29 +120,31 @@ def main() -> None:
         folder = base / name if is_boj else base
         # 위치·언어와 무관하게 주차 폴더 어딘가에 이미 풀이 파일이 있으면 건너뜀
         # (파일을 옮겼거나 예전 구조로 생성된 경우에도 중복 생성 방지)
-        if week_dir.exists() and (
+        solution_exists = week_dir.exists() and (
             any(week_dir.rglob(f"{name}.java")) or any(week_dir.rglob(f"{name}.py"))
-        ):
-            continue
-
-        if args.lang == "python":
-            template = PY_BOJ_TEMPLATE if is_boj else PY_FILE_TEMPLATE
-            header = f"# {title}\n" + (f"# {url}\n" if url else "")
-            target = folder / f"{name}.py"
-        else:
-            template = BOJ_TEMPLATE if is_boj else FILE_TEMPLATE
-            header = f"// {title}\n" + (f"// {url}\n" if url else "")
-            target = folder / f"{name}.java"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            template.format(header=header, name=name), encoding="utf-8"
         )
-        created.append(target)
-        if is_boj:
-            test_file = target.parent / "test.py"
-            if not test_file.exists():
-                test_file.write_text(TEST_RUNNER, encoding="utf-8")
-                created.append(test_file)
+        if not solution_exists:
+            if args.lang == "python":
+                template = PY_BOJ_TEMPLATE if is_boj else PY_FILE_TEMPLATE
+                header = f"# {title}\n" + (f"# {url}\n" if url else "")
+                target = folder / f"{name}.py"
+            else:
+                template = BOJ_TEMPLATE if is_boj else FILE_TEMPLATE
+                header = f"// {title}\n" + (f"// {url}\n" if url else "")
+                target = folder / f"{name}.java"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                template.format(header=header, name=name), encoding="utf-8"
+            )
+            created.append(target)
+
+        # 백준 폴더의 실행 파일(test.py/submit.py)은 없으면 만들고, 내용이 낡았으면 갱신
+        if is_boj and folder.exists():
+            for fname, content in (("test.py", TEST_RUNNER), ("submit.py", SUBMIT_RUNNER)):
+                runner = folder / fname
+                if not runner.exists() or runner.read_text(encoding="utf-8") != content:
+                    runner.write_text(content, encoding="utf-8")
+                    created.append(runner)
 
     if created:
         print("생성된 파일:")
