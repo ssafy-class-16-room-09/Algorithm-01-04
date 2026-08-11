@@ -6,8 +6,35 @@ import java.util.*;
 public class BojCoordCompression {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        System.out.print(sb);
+        int n = Integer.parseInt(st.nextToken());
+        int[] cors = new int[n];
+        int[] ans = new int[n];
+
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<n; i++){
+            cors[i] = Integer.parseInt(st.nextToken());
+            ans[i] = cors[i];
+        }
+
+        HashMap<Integer, Integer> corRank = new HashMap<>();
+        Arrays.sort(cors);
+
+        int rank = 0;
+
+        for(int cor: cors){
+            if(!corRank.containsKey(cor)){
+                corRank.put(cor, rank++);
+            }
+        }
+
+        for(int i=0; i<n; i++){
+            System.out.print(corRank.get(ans[i]) + " ");
+        }
+
+
+        
+
     }
 }
