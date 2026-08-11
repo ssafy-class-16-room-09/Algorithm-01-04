@@ -1,10 +1,11 @@
 """테스트케이스 기반 채점기 (로컬 / CI 공용).
 
 사용법:
-    python tools/judge.py <파일명(클래스명)> [--time-limit 초]
+    python tools/judge.py <파일명(클래스명)> [--set full|samples] [--time-limit 초]
 
 - 풀이 파일: week*/ 아래에서 <파일명>.java 또는 <파일명>.py 를 찾는다.
-- 테스트케이스: testcases/weekNN/<파일명>/*.in 과 같은 이름의 *.out 쌍.
+- 검증 케이스(--set full, 기본): testcases/weekNN/<파일명>/*.in 과 같은 이름의 *.out 쌍.
+- 예제 케이스(--set samples): testcases/weekNN/<파일명>/samples/*.in 과 *.out 쌍.
 - 종료 코드: 전체 통과 0, 실패 1, 채점 불가(파일·케이스 없음 등) 2.
 """
 import argparse
@@ -34,9 +35,14 @@ def main() -> int:
 
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="파일명(=public 클래스명), 확장자 제외")
+    parser.add_argument(
+        "--set", choices=["full", "samples"], default="full", dest="case_set",
+        help="full=검증 테스트케이스(기본), samples=예제만",
+    )
     parser.add_argument("--time-limit", type=float, default=10.0, help="케이스당 제한 시간(초)")
     args = parser.parse_args()
     name = args.name
+    label = "예제" if args.case_set == "samples" else "검증"
 
     root = Path(__file__).resolve().parent.parent
 
@@ -58,10 +64,17 @@ def main() -> int:
         print("  → main에 테스트케이스를 올린 뒤 'Generate problem files' 액션으로 동기화했는지 확인")
         return 2
 
-    cases = sorted(tc_dir.glob("*.in"))
+    case_dir = tc_dir / "samples" if args.case_set == "samples" else tc_dir
+    cases = sorted(case_dir.glob("*.in"))
     if not cases:
-        print(f"[채점 불가] {tc_dir} 안에 *.in 파일이 없음")
+        if args.case_set == "samples":
+            print(f"[채점 불가] 등록된 예제가 없음")
+            print(f"  → {tc_dir / 'samples'} 에 01.in / 01.out 쌍을 추가하면 예제로 채점된다")
+        else:
+            print(f"[채점 불가] {tc_dir} 안에 *.in 파일이 없음")
         return 2
+
+    print(f"[{label} 채점] {name} — 케이스 {len(cases)}개")
 
     with tempfile.TemporaryDirectory() as build_dir:
         if solution.suffix == ".java":
@@ -116,9 +129,9 @@ def main() -> int:
         print("[채점 불가] 유효한 테스트케이스 쌍(.in/.out)이 없음")
         return 2
     if passed == judged:
-        print(f"🎉 {name}: {passed}/{judged} 전체 통과")
+        print(f"🎉 {name} [{label}]: {passed}/{judged} 전체 통과")
         return 0
-    print(f"💥 {name}: {passed}/{judged} 통과")
+    print(f"💥 {name} [{label}]: {passed}/{judged} 통과")
     return 1
 
 
