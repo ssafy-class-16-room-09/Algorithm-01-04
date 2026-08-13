@@ -51,7 +51,7 @@
 ---
 
 <details open>
-<summary><b>week-02 (4문제)</b></summary>
+<summary><b>week-02 (5문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 비고 |
 |---|---|---|---|
@@ -59,6 +59,7 @@
 | 프로그래머스 43238 · 입국심사 | PgsImmigration | https://school.programmers.co.kr/learn/courses/30/lessons/43238 | - |
 | 백준 · 드래곤 앤 던전 | BojDragonAndDungeon | https://www.notion.so/3b8216e328d180ffb42cc824ab0d5cd4?source=copy_link | 선택 문제 |
 | 백준 · 좌표 압축 | BojCoordCompression | https://www.notion.so/3b8216e328d1808fa149d820442afb49?source=copy_link | 선택 문제 |
+| 백준 2143 · 두 배열의 합 | BojTwoArraysSum | - | 답이 int 범위를 넘을 수 있음 |
 
 </details>
 
