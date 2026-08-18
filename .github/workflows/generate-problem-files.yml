@@ -13,7 +13,6 @@ on:
           - scm
           - hig
           - hjh
-          - hjy
 
 permissions:
   contents: write
@@ -52,7 +51,7 @@ jobs:
           git show origin/main:.github/scripts/generate_problem_files.py > "$RUNNER_TEMP/generate_problem_files.py"
 
           if [ "${{ inputs.branch }}" = "all" ]; then
-            branches="main scm hig hjh hjy"
+            branches="main scm hig hjh"
           else
             branches="${{ inputs.branch }}"
           fi

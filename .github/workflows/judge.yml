@@ -2,7 +2,7 @@ name: Judge
 
 on:
   push:
-    branches: [scm, hig, hjh, hjy]
+    branches: [scm, hig, hjh]
     paths:
       - "week*/**"
 
