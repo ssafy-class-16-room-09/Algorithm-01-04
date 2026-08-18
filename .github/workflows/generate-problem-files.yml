@@ -26,10 +26,10 @@ concurrency:
 env:
   # ── 브랜치별 설정 ──────────────────────────────────────────────
   # 풀이 언어: 여기 나열된 브랜치는 파이썬(.py), 나머지는 자바(.java)
+  # 채점 실행 파일은 풀이 언어를 따라간다:
+  #   자바 브랜치   → <문제명>Test.java / <문제명>Submit.java (IntelliJ 등에서 Run)
+  #   파이썬 브랜치 → test.py / submit.py
   PYTHON_BRANCHES: "hjh"
-  # 채점 실행 파일: 여기 나열된 브랜치는 자바(<문제명>Test/Submit.java, IntelliJ용),
-  #                나머지는 파이썬(test.py/submit.py, VSCode용)
-  JAVA_RUNNER_BRANCHES: "hig"
   # main 브랜치는 항상 자바+파이썬 풀이, 실행 파일도 둘 다 생성 (누구나 실행 가능)
   # 표의 "언어" 칸이 java 인 문제(B형 등)는 위 설정과 무관하게 자바만 생성된다.
   # ─────────────────────────────────────────────────────────────
@@ -66,12 +66,8 @@ jobs:
               lang=both; runner=both
             else
               case " $PYTHON_BRANCHES " in
-                *" $br "*) lang=python ;;
-                *) lang=java ;;
-              esac
-              case " $JAVA_RUNNER_BRANCHES " in
-                *" $br "*) runner=java ;;
-                *) runner=py ;;
+                *" $br "*) lang=python; runner=py ;;
+                *) lang=java; runner=java ;;
               esac
             fi
             echo "=== $br (lang=$lang, runner=$runner) ==="

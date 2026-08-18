@@ -22,8 +22,7 @@
 
 | 설정 | 의미 | 현재 |
 |---|---|---|
-| `PYTHON_BRANCHES` | 나열된 브랜치는 풀이 스켈레톤을 파이썬(.py)으로, 나머지는 자바(.java)로 생성 | hjh |
-| `JAVA_RUNNER_BRANCHES` | 나열된 브랜치는 채점 실행 파일을 자바(IntelliJ용)로, 나머지는 파이썬(VSCode용)으로 생성 | hig |
+| `PYTHON_BRANCHES` | 나열된 브랜치는 파이썬(.py) 풀이 + 파이썬 실행 파일(test.py/submit.py), 나머지는 자바(.java) 풀이 + 자바 실행 파일(`<문제명>Test/Submit.java`) | hjh |
 | (main 브랜치) | 항상 자바+파이썬 풀이 파일과 양쪽 실행 파일을 모두 생성 — 누구나 어떤 환경에서든 실행 가능 | 고정 |
 
 ## 🧪 백준(BOJ) 문제 & 테스트케이스 채점
@@ -31,9 +30,9 @@
 백준 서비스 종료로 문제를 직접 등록하는 경우:
 
 1. 이슈나 노션에 문제를 올리고, **링크** 칸에 그 링크를 적는다.
-2. **파일명**은 `Boj`로 시작하게 짓는다 (예: `Boj1225`) — 전용 폴더 `weekNN/<구분>/<파일명>/` 안에 표준 입출력용 `main` 스켈레톤과 채점 실행 파일이 생성된다. 실행 파일은 브랜치 설정에 따라 파이썬 또는 자바로 생성된다:
+2. **파일명**은 `Boj`로 시작하게 짓는다 (예: `Boj1225`) — 전용 폴더 `weekNN/<구분>/<파일명>/` 안에 표준 입출력용 `main` 스켈레톤과 채점 실행 파일이 생성된다. 실행 파일은 풀이 언어를 따라간다 (자바로 풀면 자바 실행 파일, 파이썬으로 풀면 파이썬 실행 파일):
    ```
-   [파이썬 실행 파일 — VSCode 등]        [자바 실행 파일 — IntelliJ 등, 파이썬 불필요]
+   [파이썬 브랜치]                        [자바 브랜치 — 파이썬 설치 불필요]
    week02/online/BojDragonAndDungeon/    week02/online/BojDragonAndDungeon/
    ├── BojDragonAndDungeon.java          ├── BojDragonAndDungeon.java
    ├── test.py      ← 예제 채점          ├── BojDragonAndDungeonTest.java    ← 예제 채점
