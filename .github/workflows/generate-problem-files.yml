@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "파일을 생성할 개인 브랜치 (all = 전체)"
+        description: "파일을 생성할 브랜치 (all = 전체)"
         type: choice
         default: all
         options:
           - all
+          - main
           - scm
           - hig
           - hjh
@@ -23,8 +24,15 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # 파이썬으로 푸는 팀원의 브랜치 (공백으로 구분해 나열, 나머지 브랜치는 자바)
+  # ── 브랜치별 설정 ──────────────────────────────────────────────
+  # 풀이 언어: 여기 나열된 브랜치는 파이썬(.py), 나머지는 자바(.java)
   PYTHON_BRANCHES: "hjh"
+  # 채점 실행 파일: 여기 나열된 브랜치는 자바(<문제명>Test/Submit.java, IntelliJ용),
+  #                나머지는 파이썬(test.py/submit.py, VSCode용)
+  JAVA_RUNNER_BRANCHES: "hig"
+  # main 브랜치는 항상 자바+파이썬 풀이, 실행 파일도 둘 다 생성 (누구나 실행 가능)
+  # 표의 "언어" 칸이 java 인 문제(B형 등)는 위 설정과 무관하게 자바만 생성된다.
+  # ─────────────────────────────────────────────────────────────
 
 jobs:
   generate:
@@ -44,7 +52,7 @@ jobs:
           git show origin/main:.github/scripts/generate_problem_files.py > "$RUNNER_TEMP/generate_problem_files.py"
 
           if [ "${{ inputs.branch }}" = "all" ]; then
-            branches="scm hig hjh hjy"
+            branches="main scm hig hjh hjy"
           else
             branches="${{ inputs.branch }}"
           fi
@@ -54,19 +62,29 @@ jobs:
               echo "::warning::브랜치 origin/$br 이(가) 없어 건너뜀"
               continue
             fi
-            case " $PYTHON_BRANCHES " in
-              *" $br "*) lang=python ;;
-              *) lang=java ;;
-            esac
-            echo "=== $br ($lang) ==="
+            if [ "$br" = "main" ]; then
+              lang=both; runner=both
+            else
+              case " $PYTHON_BRANCHES " in
+                *" $br "*) lang=python ;;
+                *) lang=java ;;
+              esac
+              case " $JAVA_RUNNER_BRANCHES " in
+                *" $br "*) runner=java ;;
+                *) runner=py ;;
+              esac
+            fi
+            echo "=== $br (lang=$lang, runner=$runner) ==="
             git switch -C "$br" "origin/$br"
-            python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md" --lang "$lang"
+            python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md" --lang "$lang" --runner "$runner"
             # 채점기(tools/)와 테스트케이스(testcases/)를 main 기준으로 동기화
-            for path in tools testcases; do
-              if git cat-file -e "origin/main:$path" 2>/dev/null; then
-                git checkout origin/main -- "$path"
-              fi
-            done
+            if [ "$br" != "main" ]; then
+              for path in tools testcases; do
+                if git cat-file -e "origin/main:$path" 2>/dev/null; then
+                  git checkout origin/main -- "$path"
+                fi
+              done
+            fi
             if [ -n "$(git status --porcelain)" ]; then
               git add -A
               git commit -m "chore: 문제 파일 생성 및 테스트케이스 동기화"

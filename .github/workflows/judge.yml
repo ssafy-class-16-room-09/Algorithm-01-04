@@ -36,19 +36,29 @@ jobs:
           before="${{ github.event.before }}"
           if [ "$before" != "0000000000000000000000000000000000000000" ] \
              && git cat-file -e "$before^{commit}" 2>/dev/null; then
-            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.(java|py)$' | grep -v '/test\.py$' || true)
+            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.(java|py)$' || true)
           else
-            changed=$(git ls-files | grep -E '^week[^/]*/.*\.(java|py)$' | grep -v '/test\.py$' || true)
+            changed=$(git ls-files | grep -E '^week[^/]*/.*\.(java|py)$' || true)
           fi
 
           overall=0
           judged=0
+          done_names=""
           for f in $changed; do
             name=$(basename "$f")
+            ext="${name##*.}"
             name="${name%.*}"
+            # 채점 실행 파일(test.py/submit.py/<문제명>Test.java/<문제명>Submit.java)은 제외
+            case "$name" in
+              test|submit) continue ;;
+              *Test|*Submit) [ "$ext" = "java" ] && continue ;;
+            esac
+            # 같은 문제의 .java/.py 가 함께 바뀐 경우 한 번만 채점 (judge.py가 둘 다 처리)
+            case " $done_names " in *" $name "*) continue ;; esac
             tc=$(find testcases -mindepth 2 -maxdepth 2 -type d -name "$name" 2>/dev/null | head -1)
             [ -z "$tc" ] && continue
             judged=1
+            done_names="$done_names $name"
 
             set +e
             output=$(python3 tools/judge.py "$name" 2>&1)
