@@ -7,7 +7,7 @@
 1. 아래 형식대로 주차 토글(`<details>` + `<summary>week-NN</summary>`)과 표에 문제를 추가한다. (`<summary>` 다음에 빈 줄이 있어야 표가 렌더링된다)
 2. 표 칼럼은 **문제 | 파일명 | 링크 | 구분 | 언어 | 비고** 순서다.
    - **파일명**: 영문 PascalCase (확장자 제외, 예: `PgsDiskController`). 이 이름 그대로 파일과 public 클래스가 만들어진다.
-   - **링크**: 문제 URL. 없으면 `-`.
+   - **링크**: `[문제명](URL)` 형식의 마크다운 링크. 표가 길어지지 않게 URL을 그대로 적지 않는다. 없으면 `-`.
    - **구분**: `online`(주중 과제) 또는 `offline`(목요일 오프라인 세션 문제). 폴더가 이에 따라 갈린다.
    - **언어**: `any`(기본, 브랜치 설정을 따름) 또는 `java`. **B형 연습처럼 자바로만 풀어야 하는 문제는 `java`** 로 적으면 파이썬 브랜치에도 자바 파일이 생성된다.
    - **비고**: 자유 기입 (난이도, 주의사항 등). 없으면 `-`.
@@ -85,10 +85,10 @@
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
 |---|---|---|---|---|---|
-| 프로그래머스 42746 · 가장 큰 수 | PgsLargestNumber | https://school.programmers.co.kr/learn/courses/30/lessons/42746 | online | any | - |
-| 프로그래머스 43238 · 입국심사 | PgsImmigration | https://school.programmers.co.kr/learn/courses/30/lessons/43238 | online | any | - |
-| 백준 · 드래곤 앤 던전 | BojDragonAndDungeon | https://www.notion.so/3b8216e328d180ffb42cc824ab0d5cd4?source=copy_link | online | any | 선택 문제 |
-| 백준 · 좌표 압축 | BojCoordCompression | https://www.notion.so/3b8216e328d1808fa149d820442afb49?source=copy_link | online | any | 선택 문제 |
+| 프로그래머스 42746 · 가장 큰 수 | PgsLargestNumber | [가장 큰 수](https://school.programmers.co.kr/learn/courses/30/lessons/42746) | online | any | - |
+| 프로그래머스 43238 · 입국심사 | PgsImmigration | [입국심사](https://school.programmers.co.kr/learn/courses/30/lessons/43238) | online | any | - |
+| 백준 · 드래곤 앤 던전 | BojDragonAndDungeon | [드래곤 앤 던전](https://www.notion.so/3b8216e328d180ffb42cc824ab0d5cd4?source=copy_link) | online | any | 선택 문제 |
+| 백준 · 좌표 압축 | BojCoordCompression | [좌표 압축](https://www.notion.so/3b8216e328d1808fa149d820442afb49?source=copy_link) | online | any | 선택 문제 |
 | 백준 2143 · 두 배열의 합 | BojTwoArraysSum | - | offline | any | 답이 int 범위를 넘을 수 있음 |
 
 </details>
@@ -98,8 +98,8 @@
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
 |---|---|---|---|---|---|
-| 프로그래머스 42584 · 주식가격 | PgsStockPrice | https://school.programmers.co.kr/learn/courses/30/lessons/42584 | online | any | - |
-| SWEA 1225 · 암호생성기 | Swea1225 | https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV14uWl6AF0CFAYD | online | any | - |
-| 자체과제 · 링크드리스트 만들기 | MyLinkedList | - | online | any | 테스트케이스 포함 구현 |
+| 프로그래머스 42584 · 주식가격 | PgsStockPrice | [주식가격](https://school.programmers.co.kr/learn/courses/30/lessons/42584) | online | any | - |
+| SWEA 1225 · 암호생성기 | Swea1225 | [암호생성기](https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV14uWl6AF0CFAYD) | online | any | - |
+| 자체과제 · 링크드리스트 만들기 | MyLinkedList | [링크드리스트](https://app.notion.com/p/insert-delete-find-653216e328d183eb896481ac88d606ae?v=a5d216e328d18233a3258800cd5b8394&source=copy_link) | online | any | 테스트케이스 포함 구현 |
 
 </details>
