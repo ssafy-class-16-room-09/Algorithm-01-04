@@ -68,6 +68,19 @@
 ---
 
 <details open>
+<summary><b>week-03 (5문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 프로그래머스 42578 · 의상 | PgsDisguise | [의상](https://school.programmers.co.kr/learn/courses/30/lessons/42578) | online | any | 해시 개념 · Lv.2 |
+| 프로그래머스 42577 · 전화번호 목록 | PgsPhoneBook | [전화번호 목록](https://school.programmers.co.kr/learn/courses/30/lessons/42577) | online | any | 해시 응용 · Lv.2 |
+| 프로그래머스 42626 · 더 맵게 | PgsMoreSpicy | [더 맵게](https://school.programmers.co.kr/learn/courses/30/lessons/42626) | online | any | 힙 개념 · Lv.2 · 힙 직접 구현 |
+| 프로그래머스 42628 · 이중우선순위큐 | PgsDoublePriorityQueue | [이중우선순위큐](https://school.programmers.co.kr/learn/courses/30/lessons/42628) | online | any | 힙 응용 · Lv.3 |
+| 백준 1655 · 가운데를 말해요 | BojMedianTeller | [가운데를 말해요](https://app.notion.com/p/3c0216e328d180a7b13ffd817c75959f?v=a5d216e328d18233a3258800cd5b8394&source=copy_link) | offline | any | 힙 · 골드2 · 출력 버퍼링 주의 |
+
+</details>
+
+<details>
 <summary><b>week-02 (5문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
