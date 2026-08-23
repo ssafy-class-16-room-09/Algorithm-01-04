@@ -89,10 +89,14 @@ PY_SUBMIT_RUNNER = PY_RUNNER_TEMPLATE.format(
 # ───────────────────────── 자바 채점 실행 파일 ─────────────────────────
 # 파이썬 없이 순수 자바로 채점한다. IntelliJ에서 Run 버튼으로 실행.
 # .format 대신 .replace 를 쓰므로 중괄호 이스케이프가 필요 없다.
+# 주의: 이 템플릿의 한글·이모지는 java_ascii() 가 유니코드 이스케이프로 바꿔서 쓴다.
+#       javac 기본 인코딩이 MS949 인 환경(Windows + JDK 17 이하)에서도 컴파일되게 하기 위함.
+#       주석은 이스케이프하면 읽을 수 없으므로 영어(ASCII)로 쓴다.
 
 JAVA_RUNNER_TEMPLATE = r'''// __DOC__
-// IntelliJ에서 이 파일을 열고 Run(초록 화살표)을 누르면 채점된다.
-// 이 파일은 자동 생성·갱신되므로 직접 수정하지 않는다.
+// Open this file in IntelliJ and press Run (green arrow) to judge your solution.
+// Auto-generated and refreshed by the generator - do not edit by hand.
+// Korean messages are stored as unicode escapes so this compiles under any source encoding.
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -230,13 +234,34 @@ public class __CLASS__ {
 '''
 
 
+def java_ascii(s: str) -> str:
+    """비ASCII 문자를 자바 유니코드 이스케이프(백슬래시-u + 16진수 4자리)로 바꾼다.
+
+    javac 는 소스 인코딩을 적용하기 전에 유니코드 이스케이프를 먼저 해석하므로,
+    이렇게 쓴 파일은 기본 인코딩이 MS949 든 UTF-8 이든 똑같이 컴파일되고
+    실행 시 메시지는 원래 한글·이모지로 출력된다. BMP 밖 문자(이모지 일부)는
+    서로게이트 쌍 두 개로 쓴다.
+    """
+    out = []
+    for ch in s:
+        cp = ord(ch)
+        if cp < 0x80:
+            out.append(ch)
+        elif cp <= 0xFFFF:
+            out.append(f"\\u{cp:04x}")
+        else:
+            cp -= 0x10000
+            out.append(f"\\u{0xD800 + (cp >> 10):04x}\\u{0xDC00 + (cp & 0x3FF):04x}")
+    return "".join(out)
+
+
 def java_runner(name: str, samples: bool):
-    """(파일명, 내용) — 인텔리제이용 자바 실행 파일."""
+    """(파일명, 내용) — 인텔리제이용 자바 실행 파일. 내용은 순수 ASCII."""
     cls = name + ("Test" if samples else "Submit")
     doc = (
-        f"예제 채점 — 프로그래머스의 '코드 실행'에 해당. 전체 검증은 {name}Submit 실행."
+        f"Sample check - like 'Run code' on Programmers. For full verification run {name}Submit."
         if samples
-        else f"검증 채점 — 프로그래머스의 '제출 후 채점'에 해당. 예제만 돌리려면 {name}Test 실행."
+        else f"Full verification - like 'Submit' on Programmers. To run samples only, run {name}Test."
     )
     content = (
         JAVA_RUNNER_TEMPLATE
@@ -245,7 +270,7 @@ def java_runner(name: str, samples: bool):
         .replace("__SAMPLES__", "true" if samples else "false")
         .replace("__DOC__", doc)
     )
-    return f"{cls}.java", content
+    return f"{cls}.java", java_ascii(content)
 
 
 PY_RUNNERS = [("test.py", PY_TEST_RUNNER), ("submit.py", PY_SUBMIT_RUNNER)]
