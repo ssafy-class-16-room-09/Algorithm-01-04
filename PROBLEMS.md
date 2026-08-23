@@ -68,6 +68,20 @@
 ---
 
 <details open>
+<summary><b>week-04 (6문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 프로그래머스 43165 · 타겟 넘버 | PgsTargetNumber | [타겟 넘버](https://school.programmers.co.kr/learn/courses/30/lessons/43165) | online | any | DFS 개념 · Lv.2 |
+| 프로그래머스 43162 · 네트워크 | PgsNetwork | [네트워크](https://school.programmers.co.kr/learn/courses/30/lessons/43162) | online | any | DFS 응용 · Lv.3 |
+| 프로그래머스 1844 · 게임 맵 최단거리 | PgsGameMapShortestDistance | [게임 맵 최단거리](https://school.programmers.co.kr/learn/courses/30/lessons/1844) | online | any | BFS 개념 · Lv.2 · 효율성 테스트 있음 |
+| 프로그래머스 43163 · 단어 변환 | PgsWordTransform | [단어 변환](https://school.programmers.co.kr/learn/courses/30/lessons/43163) | online | any | BFS 응용 · Lv.3 |
+| 백준 2667 · 단지번호붙이기 | BojHousingComplex | [단지번호붙이기](https://app.notion.com/p/363216e328d182569a490134208eaa68?source=copy_link) | offline | any | DFS · 실버1 |
+| 백준 2206 · 벽 부수고 이동하기 | BojBreakWall | [벽 부수고 이동하기](https://app.notion.com/p/027216e328d182e9b4e901fc4baea044?source=copy_link) | offline | any | BFS · 골드3 · 메모리 192MB 주의 |
+
+</details>
+
+<details>
 <summary><b>week-03 (5문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
