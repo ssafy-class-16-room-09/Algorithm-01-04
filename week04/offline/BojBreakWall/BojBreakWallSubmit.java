@@ -1,4 +1,4 @@
-// Sample check - like 'Run code' on Programmers. For full verification run BojCoordCompressionSubmit.
+// Full verification - like 'Submit' on Programmers. To run samples only, run BojBreakWallTest.
 // Open this file in IntelliJ and press Run (green arrow) to judge your solution.
 // Auto-generated and refreshed by the generator - do not edit by hand.
 // Korean messages are stored as unicode escapes so this compiles under any source encoding.
@@ -7,9 +7,9 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class BojCoordCompressionTest {
-    static final String NAME = "BojCoordCompression";
-    static final boolean SAMPLES = true;
+public class BojBreakWallSubmit {
+    static final String NAME = "BojBreakWall";
+    static final boolean SAMPLES = false;
     static final double TIME_LIMIT_SEC = 10.0;
     static final int TRUNCATE = 800;
 
