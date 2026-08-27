@@ -1,6 +1,7 @@
-// 예제 채점 — 프로그래머스의 '코드 실행'에 해당. 전체 검증은 BojDragonAndDungeonSubmit 실행.
-// IntelliJ에서 이 파일을 열고 Run(초록 화살표)을 누르면 채점된다.
-// 이 파일은 자동 생성·갱신되므로 직접 수정하지 않는다.
+// Sample check - like 'Run code' on Programmers. For full verification run BojDragonAndDungeonSubmit.
+// Open this file in IntelliJ and press Run (green arrow) to judge your solution.
+// Auto-generated and refreshed by the generator - do not edit by hand.
+// Korean messages are stored as unicode escapes so this compiles under any source encoding.
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -15,7 +16,7 @@ public class BojDragonAndDungeonTest {
     public static void main(String[] args) throws Exception {
         Path root = findRoot();
         if (root == null)
-            exit(2, "[채점 불가] testcases 폴더를 찾지 못함 — 저장소 루트를 프로젝트로 열었는지 확인");
+            exit(2, "[\ucc44\uc810 \ubd88\uac00] testcases \ud3f4\ub354\ub97c \ucc3e\uc9c0 \ubabb\ud568 \u2014 \uc800\uc7a5\uc18c \ub8e8\ud2b8\ub97c \ud504\ub85c\uc81d\ud2b8\ub85c \uc5f4\uc5c8\ub294\uc9c0 \ud655\uc778");
         Path tcDir = null;
         try (DirectoryStream<Path> weeks = Files.newDirectoryStream(root.resolve("testcases"))) {
             for (Path w : weeks) {
@@ -24,7 +25,7 @@ public class BojDragonAndDungeonTest {
             }
         }
         if (tcDir == null)
-            exit(2, "[채점 불가] testcases/주차/" + NAME + " 폴더가 없음");
+            exit(2, "[\ucc44\uc810 \ubd88\uac00] testcases/\uc8fc\ucc28/" + NAME + " \ud3f4\ub354\uac00 \uc5c6\uc74c");
         Path caseDir = SAMPLES ? tcDir.resolve("samples") : tcDir;
         List<Path> cases = new ArrayList<>();
         if (Files.isDirectory(caseDir))
@@ -32,12 +33,12 @@ public class BojDragonAndDungeonTest {
                 for (Path p : s) cases.add(p);
             }
         Collections.sort(cases);
-        String label = SAMPLES ? "예제" : "검증";
+        String label = SAMPLES ? "\uc608\uc81c" : "\uac80\uc99d";
         if (cases.isEmpty())
             exit(2, SAMPLES
-                ? "[채점 불가] 등록된 예제가 없음 — " + caseDir + " 에 01.in / 01.out 쌍을 추가"
-                : "[채점 불가] " + caseDir + " 안에 *.in 파일이 없음");
-        System.out.println("[" + label + " 채점] " + NAME + " — 케이스 " + cases.size() + "개");
+                ? "[\ucc44\uc810 \ubd88\uac00] \ub4f1\ub85d\ub41c \uc608\uc81c\uac00 \uc5c6\uc74c \u2014 " + caseDir + " \uc5d0 01.in / 01.out \uc30d\uc744 \ucd94\uac00"
+                : "[\ucc44\uc810 \ubd88\uac00] " + caseDir + " \uc548\uc5d0 *.in \ud30c\uc77c\uc774 \uc5c6\uc74c");
+        System.out.println("[" + label + " \ucc44\uc810] " + NAME + " \u2014 \ucf00\uc774\uc2a4 " + cases.size() + "\uac1c");
 
         String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
         String classpath = System.getProperty("java.class.path");
@@ -47,7 +48,7 @@ public class BojDragonAndDungeonTest {
             String stem = fn.substring(0, fn.length() - 3);
             Path outFile = in.resolveSibling(stem + ".out");
             if (!Files.exists(outFile)) {
-                System.out.println("  [warn] " + fn + ": 짝이 되는 .out 파일이 없어 건너뜀");
+                System.out.println("  [warn] " + fn + ": \uc9dd\uc774 \ub418\ub294 .out \ud30c\uc77c\uc774 \uc5c6\uc5b4 \uac74\ub108\ub700");
                 continue;
             }
             judged++;
@@ -61,13 +62,13 @@ public class BojDragonAndDungeonTest {
             Thread tErr = pipe(proc.getErrorStream(), errBuf);
             if (!proc.waitFor((long) (TIME_LIMIT_SEC * 1000), TimeUnit.MILLISECONDS)) {
                 proc.destroyForcibly();
-                System.out.println("  ❌ " + stem + ": 시간 초과 (" + TIME_LIMIT_SEC + "초)");
+                System.out.println("  \u274c " + stem + ": \uc2dc\uac04 \ucd08\uacfc (" + TIME_LIMIT_SEC + "\ucd08)");
                 continue;
             }
             tOut.join();
             tErr.join();
             if (proc.exitValue() != 0) {
-                System.out.println("  ❌ " + stem + ": 런타임 에러");
+                System.out.println("  \u274c " + stem + ": \ub7f0\ud0c0\uc784 \uc5d0\ub7ec");
                 System.out.println(indent(clip(errBuf.toString("UTF-8"))));
                 continue;
             }
@@ -75,21 +76,21 @@ public class BojDragonAndDungeonTest {
             String actual = normalize(outBuf.toString("UTF-8"));
             if (expected.equals(actual)) {
                 passed++;
-                System.out.println("  ✅ " + stem + ": 통과");
+                System.out.println("  \u2705 " + stem + ": \ud1b5\uacfc");
             } else {
-                System.out.println("  ❌ " + stem + ": 오답");
-                System.out.println("     [기대]");
+                System.out.println("  \u274c " + stem + ": \uc624\ub2f5");
+                System.out.println("     [\uae30\ub300]");
                 System.out.println(indent(clip(expected)));
-                System.out.println("     [출력]");
+                System.out.println("     [\ucd9c\ub825]");
                 System.out.println(indent(clip(actual)));
             }
         }
         System.out.println();
         if (judged == 0)
-            exit(2, "[채점 불가] 유효한 테스트케이스 쌍(.in/.out)이 없음");
+            exit(2, "[\ucc44\uc810 \ubd88\uac00] \uc720\ud6a8\ud55c \ud14c\uc2a4\ud2b8\ucf00\uc774\uc2a4 \uc30d(.in/.out)\uc774 \uc5c6\uc74c");
         if (passed == judged)
-            exit(0, "🎉 " + NAME + " [" + label + "]: " + passed + "/" + judged + " 전체 통과");
-        exit(1, "💥 " + NAME + " [" + label + "]: " + passed + "/" + judged + " 통과");
+            exit(0, "\ud83c\udf89 " + NAME + " [" + label + "]: " + passed + "/" + judged + " \uc804\uccb4 \ud1b5\uacfc");
+        exit(1, "\ud83d\udca5 " + NAME + " [" + label + "]: " + passed + "/" + judged + " \ud1b5\uacfc");
     }
 
     static Path findRoot() {
@@ -123,7 +124,7 @@ public class BojDragonAndDungeonTest {
 
     static String clip(String s) {
         s = s.trim();
-        return s.length() <= TRUNCATE ? s : s.substring(0, TRUNCATE) + "\n... (생략)";
+        return s.length() <= TRUNCATE ? s : s.substring(0, TRUNCATE) + "\n... (\uc0dd\ub7b5)";
     }
 
     static String indent(String s) {
