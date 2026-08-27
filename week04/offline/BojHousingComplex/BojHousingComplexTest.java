@@ -1,4 +1,4 @@
-// Sample check - like 'Run code' on Programmers. For full verification run BojCoordCompressionSubmit.
+// Sample check - like 'Run code' on Programmers. For full verification run BojHousingComplexSubmit.
 // Open this file in IntelliJ and press Run (green arrow) to judge your solution.
 // Auto-generated and refreshed by the generator - do not edit by hand.
 // Korean messages are stored as unicode escapes so this compiles under any source encoding.
@@ -7,8 +7,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class BojCoordCompressionTest {
-    static final String NAME = "BojCoordCompression";
+public class BojHousingComplexTest {
+    static final String NAME = "BojHousingComplex";
     static final boolean SAMPLES = true;
     static final double TIME_LIMIT_SEC = 10.0;
     static final int TRUNCATE = 800;
