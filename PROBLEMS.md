@@ -68,6 +68,48 @@
 ---
 
 <details open>
+<summary><b>week-08 (6문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 프로그래머스 12978 · 배달 | PgsDelivery | [배달](https://school.programmers.co.kr/learn/courses/30/lessons/12978) | online | any | 다익스트라 개념 · Lv.2 |
+| 백준 1504 · 특정한 최단 경로 | BojSpecificShortestPath | - | online | any | 다익스트라 응용 · 골드4 · 경유지 2곳을 지나는 최단경로 조합 |
+| 백준 1715 · 카드 정렬하기 | BojCardSort | - | online | any | 우선순위 큐 개념 · 실버2 · 허프만 스타일 병합 |
+| 백준 11000 · 강의실 배정 | BojClassroomAssignment | - | online | any | 우선순위 큐 응용 · 골드5 · 스케줄링 유형 |
+| 백준 1753 · 최단경로 | BojShortestPath | - | offline | any | 다익스트라 · 골드4 · PQ 기반 다익스트라 직접 구현 |
+| 백준 5719 · 거의 최단 경로 | BojAlmostShortestPath | - | offline | any | 다익스트라 · 골드1 · 최단경로 트리 간선 제거 후 재탐색 |
+
+</details>
+
+<details>
+<summary><b>week-07 (6문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 프로그래머스 42890 · 후보키 | PgsCandidateKey | [후보키](https://school.programmers.co.kr/learn/courses/30/lessons/42890) | online | any | 비트마스킹 개념 · Lv.2 |
+| 백준 14225 · 부분수열의 합 | BojSubsequenceSum | - | online | any | 비트마스킹 개념 · 실버1 · SWEA 부분집합의 합 대체 |
+| 백준 1062 · 가르치기 | BojTeaching | - | online | any | 비트마스킹 응용 · 골드4 · 부분집합 조합 탐색 |
+| 백준 1268 · 임시 반장 정하기 | BojTemporaryClassLeader | - | online | any | 비트마스킹 응용 · 실버1 · 비트 AND로 교집합 계산 |
+| 백준 2098 · 외판원 순회 | BojTravelingSalesman | - | offline | any | 비트마스킹 · 골드1 · TSP DP, N!→2^N·N² 개선 |
+| 백준 1194 · 달이 차오른다, 가자 | BojMazeEscape | - | offline | any | 비트마스킹 · 골드3 · BFS + 열쇠 상태 압축 |
+
+</details>
+
+<details>
+<summary><b>week-06 (6문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 백준 12865 · 평범한 배낭 | BojOrdinaryKnapsack | - | online | any | 배낭 개념 · 골드5 · 0/1 냅색 직접 구현 |
+| 백준 7579 · 앱 | BojApps | - | online | any | 배낭 응용 · 골드4 · 비용 기준으로 뒤집은 냅색 |
+| 프로그래머스 42885 · 구명보트 | PgsLifeboat | [구명보트](https://school.programmers.co.kr/learn/courses/30/lessons/42885) | online | any | 그리디 개념 · Lv.2 |
+| 프로그래머스 42884 · 단속카메라 | PgsSpeedCamera | [단속카메라](https://school.programmers.co.kr/learn/courses/30/lessons/42884) | online | any | 그리디 응용 · Lv.3 · 구간 커버링 |
+| 백준 1450 · 냅색문제 | BojKnapsackCount | - | offline | any | 배낭 · 골드1 · 브루트포스(2³⁰) → Meet in the Middle(2¹⁵) 개선 |
+| 백준 2212 · 센서 | BojSensor | - | offline | any | 그리디 · 골드5 |
+
+</details>
+
+<details>
 <summary><b>week-05 (6문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
