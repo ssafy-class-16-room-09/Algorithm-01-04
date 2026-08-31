@@ -68,6 +68,20 @@
 ---
 
 <details open>
+<summary><b>week-05 (6문제)</b></summary>
+
+| 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
+|---|---|---|---|---|---|
+| 프로그래머스 12900 · 2 x n 타일링 | PgsTwoByNTiling | [2 x n 타일링](https://school.programmers.co.kr/learn/courses/30/lessons/12900) | online | any | DP 개념 · Lv.3 |
+| 프로그래머스 12945 · 피보나치 수 | PgsFibonacci | [피보나치 수](https://school.programmers.co.kr/learn/courses/30/lessons/12945) | online | any | DP 개념 · Lv.2 · 메모이제이션 |
+| 프로그래머스 42898 · 등굣길 | PgsSchoolRoute | [등굣길](https://school.programmers.co.kr/learn/courses/30/lessons/42898) | online | any | DP 응용 · Lv.3 |
+| 프로그래머스 43105 · 정수 삼각형 | PgsIntegerTriangle | [정수 삼각형](https://school.programmers.co.kr/learn/courses/30/lessons/43105) | online | any | DP 응용 · Lv.3 |
+| 백준 1520 · 내리막 길 | BojDownhillPath | - | offline | any | DP · 골드3 |
+| 백준 2482 · 색상환 | BojColorWheel | - | offline | any | DP · 골드5 · BOJ 서비스 종료로 자체 테스트케이스 채점 예정 |
+
+</details>
+
+<details>
 <summary><b>week-04 (6문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
