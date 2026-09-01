@@ -1,0 +1,5 @@
+# 백준 14225 · 부분수열의 합
+import sys
+
+input = sys.stdin.readline
+
