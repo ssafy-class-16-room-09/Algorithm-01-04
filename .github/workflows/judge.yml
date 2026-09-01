@@ -1,0 +1,81 @@
+name: Judge
+
+on:
+  push:
+    branches: [scm, hig, hjh]
+    paths:
+      - "week*/**"
+
+permissions:
+  contents: read
+
+jobs:
+  judge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Judge changed solutions
+        run: |
+          git fetch origin main
+          # 채점기와 테스트케이스는 항상 main의 최신 버전을 사용
+          for path in tools testcases; do
+            if git cat-file -e "origin/main:$path" 2>/dev/null; then
+              git checkout origin/main -- "$path"
+            fi
+          done
+
+          # 이번 push에서 변경된 풀이 파일만 채점 대상으로 삼는다
+          before="${{ github.event.before }}"
+          if [ "$before" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$before^{commit}" 2>/dev/null; then
+            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.(java|py)$' || true)
+          else
+            changed=$(git ls-files | grep -E '^week[^/]*/.*\.(java|py)$' || true)
+          fi
+
+          overall=0
+          judged=0
+          done_names=""
+          for f in $changed; do
+            name=$(basename "$f")
+            ext="${name##*.}"
+            name="${name%.*}"
+            # 채점 실행 파일(test.py/submit.py/<문제명>Test.java/<문제명>Submit.java)은 제외
+            case "$name" in
+              test|submit) continue ;;
+              *Test|*Submit) [ "$ext" = "java" ] && continue ;;
+            esac
+            # 같은 문제의 .java/.py 가 함께 바뀐 경우 한 번만 채점 (judge.py가 둘 다 처리)
+            case " $done_names " in *" $name "*) continue ;; esac
+            tc=$(find testcases -mindepth 2 -maxdepth 2 -type d -name "$name" 2>/dev/null | head -1)
+            [ -z "$tc" ] && continue
+            judged=1
+            done_names="$done_names $name"
+
+            set +e
+            output=$(python3 tools/judge.py "$name" 2>&1)
+            status=$?
+            set -e
+
+            echo "$output"
+            {
+              if [ "$status" -eq 0 ]; then echo "## ✅ $name"; else echo "## ❌ $name"; fi
+              echo '```'
+              echo "$output"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            [ "$status" -ne 0 ] && overall=1
+          done
+
+          if [ "$judged" -eq 0 ]; then
+            echo "테스트케이스가 등록된 변경 파일이 없어 채점을 건너뜀" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          exit $overall
