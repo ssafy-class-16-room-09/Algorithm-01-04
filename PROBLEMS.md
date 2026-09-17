@@ -30,7 +30,7 @@
 백준 서비스 종료로 문제를 직접 등록하는 경우:
 
 1. 이슈나 노션에 문제를 올리고, **링크** 칸에 그 링크를 적는다.
-2. **파일명**은 `Boj`로 시작하게 짓는다 (예: `Boj1225`) — 전용 폴더 `weekNN/<구분>/<파일명>/` 안에 표준 입출력용 `main` 스켈레톤과 채점 실행 파일이 생성된다. 실행 파일은 풀이 언어를 따라간다 (자바로 풀면 자바 실행 파일, 파이썬으로 풀면 파이썬 실행 파일):
+2. **파일명**은 `Boj`로 시작하게 짓는다 (예: `Boj1225`). 출처가 없는 자체 문제는 `Custom`으로 시작한다 (예: `CustomFarmRobot`) — 전용 폴더 `weekNN/<구분>/<파일명>/` 안에 표준 입출력용 `main` 스켈레톤과 채점 실행 파일이 생성된다. 실행 파일은 풀이 언어를 따라간다 (자바로 풀면 자바 실행 파일, 파이썬으로 풀면 파이썬 실행 파일):
    ```
    [파이썬 브랜치]                        [자바 브랜치 — 파이썬 설치 불필요]
    week02/online/BojDragonAndDungeon/    week02/online/BojDragonAndDungeon/
@@ -96,7 +96,7 @@
 </details>
 
 <details>
-<summary><b>week-06 (6문제)</b></summary>
+<summary><b>week-06 (7문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
 |---|---|---|---|---|---|
@@ -106,6 +106,7 @@
 | 프로그래머스 42884 · 단속카메라 | PgsSpeedCamera | [단속카메라](https://school.programmers.co.kr/learn/courses/30/lessons/42884) | online | any | 그리디 응용 · Lv.3 · 구간 커버링 |
 | 백준 1450 · 냅색문제 | BojKnapsackCount | - | offline | any | 배낭 · 골드1 · 브루트포스(2³⁰) → Meet in the Middle(2¹⁵) 개선 |
 | 백준 2212 · 센서 | BojSensor | - | offline | any | 그리디 · 골드5 |
+| 자체과제 · 농사 로봇의 최대 수확량 | CustomFarmRobot | - | offline | any | 시뮬레이션 · 시작 위치·방향 완전탐색 |
 
 </details>
 
