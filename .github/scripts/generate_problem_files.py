@@ -23,7 +23,7 @@ FILE_TEMPLATE = """{header}public class {name} {{
 }}
 """
 
-# 파일명이 Boj로 시작하면 표준 입출력 형식이므로 main 스켈레톤을 넣는다
+# 파일명이 Boj(백준) 또는 Custom(자체 문제)으로 시작하면 표준 입출력 형식이므로 main 스켈레톤을 넣는다
 BOJ_TEMPLATE = """{header}import java.io.*;
 import java.util.*;
 
@@ -341,7 +341,7 @@ def main() -> None:
     created, removed = [], []
 
     for week, title, name, url, section, lang_only in parse_problems(Path(args.problems)):
-        is_boj = name.startswith("Boj")
+        is_boj = name.startswith(("Boj", "Custom"))
         week_dir = root / f"week{week:02d}"
         base = week_dir / section
         folder = base / name if is_boj else base
