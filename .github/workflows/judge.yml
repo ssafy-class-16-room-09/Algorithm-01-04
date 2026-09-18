@@ -5,6 +5,7 @@ on:
     branches: [scm, hig, hjh]
     paths:
       - "week*/**"
+      - "custom/**"
 
 permissions:
   contents: read
@@ -28,6 +29,7 @@ jobs:
           # 채점기와 테스트케이스는 항상 main의 최신 버전을 사용
           for path in tools testcases; do
             if git cat-file -e "origin/main:$path" 2>/dev/null; then
+              git rm -r -q --ignore-unmatch "$path"
               git checkout origin/main -- "$path"
             fi
           done
@@ -36,9 +38,9 @@ jobs:
           before="${{ github.event.before }}"
           if [ "$before" != "0000000000000000000000000000000000000000" ] \
              && git cat-file -e "$before^{commit}" 2>/dev/null; then
-            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^week[^/]*/.*\.(java|py)$' || true)
+            changed=$(git diff --name-only "$before" "$GITHUB_SHA" | grep -E '^(week[^/]*|custom)/.*\.(java|py)$' || true)
           else
-            changed=$(git ls-files | grep -E '^week[^/]*/.*\.(java|py)$' || true)
+            changed=$(git ls-files | grep -E '^(week[^/]*|custom)/.*\.(java|py)$' || true)
           fi
 
           overall=0

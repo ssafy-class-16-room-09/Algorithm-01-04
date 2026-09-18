@@ -1,4 +1,5 @@
 """PROBLEMS.md를 파싱해 weekNN/{online,offline}/에 문제별 풀이 파일을 생성한다.
+Custom 으로 시작하는 자체 문제는 주차와 상관없이 최상위 custom/<파일명>/ 에 생성한다.
 
 사용법:
     python3 generate_problem_files.py <PROBLEMS.md> [저장소 루트]
@@ -14,6 +15,7 @@
 """
 import argparse
 import re
+import shutil
 from pathlib import Path
 
 # ──────────────────────────── 풀이 스켈레톤 ────────────────────────────
@@ -329,6 +331,32 @@ def parse_problems(problems_path: Path):
     return problems
 
 
+def migrate_custom(week_dir: Path, folder: Path, name: str):
+    """예전에 주차 폴더에 생성된 자체 문제 파일을 custom/<파일명>/ 으로 옮긴다.
+
+    풀이 내용은 그대로 보존하고, custom/ 에 같은 이름의 파일이 이미 있으면 옮기지 않는다.
+    반환: [(원래 경로, 새 경로)]
+    """
+    if not week_dir.exists():
+        return []
+    old_dirs = [d for d in week_dir.rglob(name) if d.is_dir()]
+    files = [f for d in old_dirs for f in d.iterdir() if f.is_file()]
+    # 전용 폴더 없이 주차 폴더에 바로 놓인 풀이 파일
+    files += [f for ext in (".java", ".py") for f in week_dir.rglob(name + ext) if f.parent.name != name]
+    moved = []
+    for old in files:
+        new = folder / old.name
+        if new.exists():
+            continue
+        folder.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(old), str(new))
+        moved.append((old, new))
+    for d in old_dirs:
+        if not any(d.iterdir()):
+            d.rmdir()
+    return moved
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("problems", help="PROBLEMS.md 경로")
@@ -338,13 +366,21 @@ def main() -> None:
     args = parser.parse_args()
     root = Path(args.root)
 
-    created, removed = [], []
+    created, removed, moved = [], [], []
 
     for week, title, name, url, section, lang_only in parse_problems(Path(args.problems)):
-        is_boj = name.startswith(("Boj", "Custom"))
+        is_custom = name.startswith("Custom")
+        is_boj = is_custom or name.startswith("Boj")
         week_dir = root / f"week{week:02d}"
-        base = week_dir / section
-        folder = base / name if is_boj else base
+        if is_custom:
+            # 자체 문제는 주차 폴더가 아닌 최상위 custom/<파일명>/ 에 둔다
+            search_dir = root / "custom"
+            folder = search_dir / name
+            moved += migrate_custom(week_dir, folder, name)
+        else:
+            search_dir = week_dir
+            base = week_dir / section
+            folder = base / name if is_boj else base
 
         # 이 문제에 만들 언어 목록 (표의 "언어=java" 는 브랜치 설정보다 우선)
         if lang_only == "java":
@@ -358,8 +394,8 @@ def main() -> None:
         # 주차 폴더 어딘가에 같은 언어의 풀이 파일이 이미 있으면 건너뜀
         # (위치를 옮겼거나 예전 구조로 생성된 경우에도 중복 생성 방지)
         # 단일 언어 모드에서는 다른 언어 파일이 있어도 건너뜀 (기존 동작 유지)
-        exists_java = week_dir.exists() and any(week_dir.rglob(f"{name}.java"))
-        exists_py = week_dir.exists() and any(week_dir.rglob(f"{name}.py"))
+        exists_java = search_dir.exists() and any(search_dir.rglob(f"{name}.java"))
+        exists_py = search_dir.exists() and any(search_dir.rglob(f"{name}.py"))
         for lang in langs:
             if lang == "java":
                 if exists_java or (args.lang != "both" and exists_py):
@@ -397,6 +433,10 @@ def main() -> None:
                 (folder / fname).unlink()
                 removed.append(folder / fname)
 
+    if moved:
+        print("custom/ 으로 옮긴 파일:")
+        for src, dst in moved:
+            print(f"  {src} -> {dst}")
     if created:
         print("생성·갱신된 파일:")
         for path in created:
@@ -405,7 +445,7 @@ def main() -> None:
         print("정리(삭제)된 파일:")
         for path in removed:
             print(f"  {path}")
-    if not created and not removed:
+    if not created and not removed and not moved:
         print("생성할 새 파일 없음")
 
 

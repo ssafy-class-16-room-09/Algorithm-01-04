@@ -72,10 +72,12 @@ jobs:
             echo "=== $br (lang=$lang, runner=$runner) ==="
             git switch -C "$br" "origin/$br"
             python3 "$RUNNER_TEMP/generate_problem_files.py" "$RUNNER_TEMP/PROBLEMS.md" --lang "$lang" --runner "$runner"
-            # 채점기(tools/)와 테스트케이스(testcases/)를 main 기준으로 동기화
+            # 채점기(tools/)와 테스트케이스(testcases/)를 main과 똑같이 맞춘다
+            # (먼저 지우고 가져와서, main에서 옮기거나 지운 폴더가 브랜치에 남지 않게 함)
             if [ "$br" != "main" ]; then
               for path in tools testcases; do
                 if git cat-file -e "origin/main:$path" 2>/dev/null; then
+                  git rm -r -q --ignore-unmatch "$path"
                   git checkout origin/main -- "$path"
                 fi
               done
