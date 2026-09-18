@@ -82,7 +82,7 @@
 </details>
 
 <details>
-<summary><b>week-07 (6문제)</b></summary>
+<summary><b>week-07 (7문제)</b></summary>
 
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
 |---|---|---|---|---|---|
@@ -92,6 +92,7 @@
 | 백준 1268 · 임시 반장 정하기 | BojTemporaryClassLeader | - | online | any | 비트마스킹 응용 · 실버1 · 비트 AND로 교집합 계산 |
 | 백준 2098 · 외판원 순회 | BojTravelingSalesman | - | offline | any | 비트마스킹 · 골드1 · TSP DP, N!→2^N·N² 개선 |
 | 백준 1194 · 달이 차오른다, 가자 | BojMazeEscape | - | offline | any | 비트마스킹 · 골드3 · BFS + 열쇠 상태 압축 |
+| 자체과제 · 발전기 설치 | CustomPowerGenerator | - | offline | any | 완전탐색 · 발전기 2개 위치 조합 · 불가능하면 -2 |
 
 </details>
 
