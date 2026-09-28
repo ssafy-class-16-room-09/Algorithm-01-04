@@ -87,7 +87,7 @@
 | 문제 | 파일명 | 링크 | 구분 | 언어 | 비고 |
 |---|---|---|---|---|---|
 | 프로그래머스 42890 · 후보키 | PgsCandidateKey | [후보키](https://school.programmers.co.kr/learn/courses/30/lessons/42890) | online | any | 비트마스킹 개념 · Lv.2 |
-| 백준 14225 · 부분수열의 합 | BojSubsequenceSum | - | online | any | 비트마스킹 개념 · 실버1 · SWEA 부분집합의 합 대체 |
+| 백준 1182 · 부분수열의 합 | BojSubsequenceSum | - | online | any | 비트마스킹 개념 · 실버2 · SWEA 부분집합의 합 대체 |
 | 백준 1062 · 가르치기 | BojTeaching | - | online | any | 비트마스킹 응용 · 골드4 · 부분집합 조합 탐색 |
 | 백준 1268 · 임시 반장 정하기 | BojTemporaryClassLeader | - | online | any | 비트마스킹 응용 · 실버1 · 비트 AND로 교집합 계산 |
 | 백준 2098 · 외판원 순회 | BojTravelingSalesman | - | offline | any | 비트마스킹 · 골드1 · TSP DP, N!→2^N·N² 개선 |
