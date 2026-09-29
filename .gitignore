@@ -1,2 +1,5 @@
 *.vscode
 *.class
+!.vscode/
+.vscode/*
+!.vscode/settings.json
