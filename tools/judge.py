@@ -3,9 +3,10 @@
 사용법:
     python tools/judge.py <파일명(클래스명)> [--set full|samples] [--lang java|python] [--time-limit 초]
 
-- 풀이 파일: week*/ 아래에서 <파일명>.java 또는 <파일명>.py 를 찾는다.
+- 풀이 파일: week*/ 와 custom/(자체 문제) 아래에서 <파일명>.java 또는 <파일명>.py 를 찾는다.
   둘 다 있으면(main 브랜치 등) 각각 채점하고, --lang 으로 하나만 고를 수 있다.
 - 검증 케이스(--set full, 기본): testcases/weekNN/<파일명>/*.in 과 같은 이름의 *.out 쌍.
+  자체 문제는 testcases/custom/<파일명>/.
 - 예제 케이스(--set samples): testcases/weekNN/<파일명>/samples/*.in 과 *.out 쌍.
 - 종료 코드: 전체 통과 0, 실패 1, 채점 불가(파일·케이스 없음 등) 2.
 """
@@ -119,18 +120,19 @@ def main() -> int:
     solutions = []
     for ext in exts:
         # 실행 파일(<문제명>Test.java 등)은 이름이 다르므로 자연히 제외된다
-        found = sorted(f for d in root.glob("week*") for f in d.rglob(f"{name}{ext}"))
+        dirs = [*root.glob("week*"), root / "custom"]
+        found = sorted(f for d in dirs if d.is_dir() for f in d.rglob(f"{name}{ext}"))
         if found:
             solutions.append(found[0])
     if not solutions:
         want = " 또는 ".join(f"{name}{e}" for e in exts)
-        print(f"[채점 불가] week*/ 아래에서 {want} 를 찾지 못함")
+        print(f"[채점 불가] week*/ 와 custom/ 아래에서 {want} 를 찾지 못함")
         return 2
 
     tc_root = root / "testcases"
     tc_dir = next((d for d in tc_root.glob(f"*/{name}") if d.is_dir()), None)
     if tc_dir is None:
-        print(f"[채점 불가] testcases/weekNN/{name}/ 폴더가 없음")
+        print(f"[채점 불가] testcases/weekNN/{name}/ (자체 문제는 testcases/custom/{name}/) 폴더가 없음")
         print("  → main에 테스트케이스를 올린 뒤 'Generate problem files' 액션으로 동기화했는지 확인")
         return 2
 
