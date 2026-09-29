@@ -67,9 +67,8 @@ while root != root.parent and not (root / "tools" / "judge.py").exists():
 if not (root / "tools" / "judge.py").exists():
     sys.exit("tools/judge.py 를 찾지 못함 — Generate 액션으로 브랜치를 동기화했는지 확인")
 
-sys.exit(subprocess.call(
-    [sys.executable, str(root / "tools" / "judge.py"), NAME{extra}], cwd=root
-))
+cmd = [sys.executable, str(root / "tools" / "judge.py"), NAME{extra}]
+sys.exit(subprocess.call(cmd + sys.argv[1:], cwd=root))
 '''
 
 PY_TEST_RUNNER = PY_RUNNER_TEMPLATE.format(
@@ -100,6 +99,7 @@ JAVA_RUNNER_TEMPLATE = r'''// __DOC__
 // Auto-generated and refreshed by the generator - do not edit by hand.
 // Korean messages are stored as unicode escapes so this compiles under any source encoding.
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -107,7 +107,8 @@ import java.util.concurrent.TimeUnit;
 public class __CLASS__ {
     static final String NAME = "__NAME__";
     static final boolean SAMPLES = __SAMPLES__;
-    static final double TIME_LIMIT_SEC = 10.0;
+    static final double DEFAULT_TIME_LIMIT_SEC = 10.0;
+    static final long TERMINATION_GRACE_MILLIS = 2000;
     static final int TRUNCATE = 800;
 
     public static void main(String[] args) throws Exception {
@@ -123,6 +124,7 @@ public class __CLASS__ {
         }
         if (tcDir == null)
             exit(2, "[채점 불가] testcases/주차/" + NAME + " 폴더가 없음");
+        double timeLimitSec = resolveTimeLimit(tcDir, args);
         Path caseDir = SAMPLES ? tcDir.resolve("samples") : tcDir;
         List<Path> cases = new ArrayList<>();
         if (Files.isDirectory(caseDir))
@@ -157,13 +159,13 @@ public class __CLASS__ {
             ByteArrayOutputStream errBuf = new ByteArrayOutputStream();
             Thread tOut = pipe(proc.getInputStream(), outBuf);
             Thread tErr = pipe(proc.getErrorStream(), errBuf);
-            if (!proc.waitFor((long) (TIME_LIMIT_SEC * 1000), TimeUnit.MILLISECONDS)) {
-                proc.destroyForcibly();
-                System.out.println("  ❌ " + stem + ": 시간 초과 (" + TIME_LIMIT_SEC + "초)");
+            if (!proc.waitFor((long) (timeLimitSec * 1000), TimeUnit.MILLISECONDS)) {
+                killProcessTree(proc);
+                finishPipes(proc, tOut, tErr);
+                System.out.println("  ❌ " + stem + ": 시간 초과 (" + timeLimitSec + "초)");
                 continue;
             }
-            tOut.join();
-            tErr.join();
+            finishPipes(proc, tOut, tErr);
             if (proc.exitValue() != 0) {
                 System.out.println("  ❌ " + stem + ": 런타임 에러");
                 System.out.println(indent(clip(errBuf.toString("UTF-8"))));
@@ -196,6 +198,47 @@ public class __CLASS__ {
         return null;
     }
 
+    static double resolveTimeLimit(Path tcDir, String[] args) {
+        String override = null;
+        if (args.length == 2 && "--time-limit".equals(args[0])) {
+            override = args[1];
+        } else if (args.length == 1 && args[0].startsWith("--time-limit=")) {
+            override = args[0].substring("--time-limit=".length());
+        } else if (args.length != 0) {
+            exit(2, "[채점 불가] 사용법: --time-limit <초>");
+        }
+        if (override != null)
+            return parseConfiguredTimeLimit(override, "명령행 --time-limit");
+
+        Path metadata = tcDir.resolve("time_limit.txt");
+        if (Files.exists(metadata)) {
+            try {
+                String value = new String(Files.readAllBytes(metadata), StandardCharsets.UTF_8);
+                return parseConfiguredTimeLimit(value, metadata.toString());
+            } catch (IOException e) {
+                exit(2, "[채점 불가] 시간 제한 설정 오류: " + metadata
+                    + ": 읽을 수 없음 (" + e.getMessage() + ")");
+            }
+        }
+
+        String env = System.getenv("JUDGE_TIME_LIMIT_SECONDS");
+        if (env != null && !env.trim().isEmpty())
+            return parseConfiguredTimeLimit(env, "환경 변수 JUDGE_TIME_LIMIT_SECONDS");
+        return DEFAULT_TIME_LIMIT_SEC;
+    }
+
+    static double parseConfiguredTimeLimit(String raw, String source) {
+        String value = raw.trim();
+        try {
+            double seconds = Double.parseDouble(value);
+            if (Double.isFinite(seconds) && seconds > 0) return seconds;
+        } catch (NumberFormatException ignored) {
+        }
+        exit(2, "[채점 불가] 시간 제한 설정 오류: " + source + ": '" + value
+            + "' — 초 단위의 0보다 큰 유한한 수여야 함");
+        return DEFAULT_TIME_LIMIT_SEC;
+    }
+
     static Thread pipe(final InputStream src, final ByteArrayOutputStream dst) {
         Thread t = new Thread(() -> {
             try {
@@ -205,8 +248,55 @@ public class __CLASS__ {
             } catch (IOException ignored) {
             }
         });
+        // A malformed solution must not keep the judge JVM alive through an inherited pipe.
+        t.setDaemon(true);
         t.start();
         return t;
+    }
+
+    static void finishPipes(Process proc, Thread tOut, Thread tErr) throws InterruptedException {
+        long deadline = System.nanoTime()
+            + TimeUnit.MILLISECONDS.toNanos(TERMINATION_GRACE_MILLIS);
+        joinUntil(tOut, deadline);
+        joinUntil(tErr, deadline);
+        if (tOut.isAlive()) closeAsync(proc.getInputStream());
+        if (tErr.isAlive()) closeAsync(proc.getErrorStream());
+    }
+
+    static void joinUntil(Thread thread, long deadlineNanos) throws InterruptedException {
+        long remaining = deadlineNanos - System.nanoTime();
+        if (remaining <= 0) return;
+        long millis = TimeUnit.NANOSECONDS.toMillis(remaining);
+        int nanos = (int) (remaining - TimeUnit.MILLISECONDS.toNanos(millis));
+        thread.join(millis, nanos);
+    }
+
+    static void closeAsync(final InputStream stream) {
+        Thread closer = new Thread(() -> {
+            try {
+                stream.close();
+            } catch (IOException ignored) {
+            }
+        });
+        // ProcessPipeInputStream.close() may itself wait for an inherited handle.
+        closer.setDaemon(true);
+        closer.start();
+    }
+
+    static void killProcessTree(Process proc) {
+        List<ProcessHandle> descendants = new ArrayList<>();
+        proc.descendants().forEach(descendants::add);
+        Collections.reverse(descendants);
+        for (ProcessHandle child : descendants)
+            if (child.isAlive()) child.destroyForcibly();
+        proc.destroyForcibly();
+        try {
+            proc.waitFor(TERMINATION_GRACE_MILLIS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        for (ProcessHandle child : descendants)
+            if (child.isAlive()) child.destroyForcibly();
     }
 
     static String normalize(String s) {

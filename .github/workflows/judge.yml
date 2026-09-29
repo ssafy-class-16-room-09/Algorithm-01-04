@@ -10,9 +10,15 @@ on:
 permissions:
   contents: read
 
+env:
+  # 문제별 time_limit.txt가 없을 때 사용하는 공통 fallback.
+  JUDGE_TIME_LIMIT_SECONDS: "10"
+
 jobs:
   judge:
     runs-on: ubuntu-latest
+    # 채점기 자체에 문제가 생겨도 GitHub Actions가 장시간 점유되지 않게 하는 최종 안전망.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,6 +39,9 @@ jobs:
               git checkout origin/main -- "$path"
             fi
           done
+
+          # 무한 루프와 자식 프로세스까지 제한 시간 안에 정리되는지 먼저 확인
+          python3 -m unittest discover -s tools -p "test_*.py"
 
           # 이번 push에서 변경된 풀이 파일만 채점 대상으로 삼는다
           before="${{ github.event.before }}"
