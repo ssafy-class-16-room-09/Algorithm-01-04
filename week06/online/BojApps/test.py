@@ -16,6 +16,5 @@ while root != root.parent and not (root / "tools" / "judge.py").exists():
 if not (root / "tools" / "judge.py").exists():
     sys.exit("tools/judge.py 를 찾지 못함 — Generate 액션으로 브랜치를 동기화했는지 확인")
 
-sys.exit(subprocess.call(
-    [sys.executable, str(root / "tools" / "judge.py"), NAME, "--set", "samples"], cwd=root
-))
+cmd = [sys.executable, str(root / "tools" / "judge.py"), NAME, "--set", "samples"]
+sys.exit(subprocess.call(cmd + sys.argv[1:], cwd=root))
